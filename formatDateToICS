@@ -1194,11 +1194,8 @@
 
         /*Senden einer E-Mail*/
         function sendBookingEmail(bookingData) {
-            // Generieren Sie den ICS-Inhalt
             const icsContent = generateICSContent(bookingData);
-
-            // Base64-Kodierung des ICS-Inhalts (falls erforderlich)
-            const icsBase64 = btoa(unescape(encodeURIComponent(icsContent)));
+            const base64ICS = btoa(unescape(encodeURIComponent(icsContent)));
             
             const templateParams = {
                 title: bookingData.title,
@@ -1212,7 +1209,7 @@
                 address: "Heinrich-Hertz-Straße 6, 44227 Dortmund im 4. Obergeschoss",
                 to_email: bookingData.email, 
                 reply_to: bookingData.email,
-                ics_attachment: icsBase64, // ICS-Inhalt wird als Anhang verwendet
+                ics_attachment: base64ICS
             };
 
             emailjs.send("service_tp6geem", "template_imwd8tm", templateParams)
