@@ -1162,10 +1162,16 @@
                 <div class="booking-detail-item"><strong>${language === 'DE' ? 'Buchungstyp' : 'Booking Type'}:</strong> ${booking.type === 'internal' ? (language === 'DE' ? 'Intern' : 'Internal') : (language === 'DE' ? 'Extern' : 'External')}</div>
                 <div class="booking-detail-item"><strong>${language === 'DE' ? 'Räume' : 'Rooms'}:</strong> ${booking.rooms.map(r => (language === 'DE' ? 'Meetingraum ' : 'Meeting Room ') + r).join(', ')}</div>
                 <div class="booking-detail-item"><strong>Adresse:</strong> Heinrich-Hertz-Straße 6, 44227 Dortmund im 4. Obergeschoss</div>
+
+                downloadICSFile(booking);
             `;
             confirmationModal.style.display = 'flex';
         }
 
+        function downloadICSFile(bookingData) {
+            // ... (Code zum Herunterladen der ICS-Datei) ...
+        }
+        
         /* Speichern einer Buchung */
         function saveBooking(booking) {
             bookingsData.push(booking);
@@ -1178,7 +1184,7 @@
 
         /*Senden einer E-Mail*/
         function sendBookingEmail(bookingData) {
-            const icsLink = generateICSFile(bookingData);
+            const icsLink = generateICSContent(bookingData);
             
             const templateParams = {
                 title: bookingData.title,
@@ -1192,7 +1198,7 @@
                 address: "Heinrich-Hertz-Straße 6, 44227 Dortmund im 4. Obergeschoss",
                 to_email: bookingData.email, 
                 reply_to: bookingData.email,
-                ics_link: icsLink, // Der Link wird in der E-Mail verwendet
+                ics_attachment: icsContent, // Der Link wird in der E-Mail verwendet
             };
 
             emailjs.send("service_tp6geem", "template_imwd8tm", templateParams)
@@ -1202,6 +1208,14 @@
                 .catch(error => {
                     console.error("Fehler beim Senden der E-Mail:", error);
                 });
+        }
+
+        function generateICSContent(bookingData) {
+            // ... (Code zum Generieren des ICS-Inhalts) ...
+        }
+
+        function formatDateToICS(date) {
+            return date.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
         }
 
         /*Kalendereintrag senden*/
