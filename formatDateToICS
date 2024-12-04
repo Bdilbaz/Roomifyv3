@@ -1175,7 +1175,7 @@
             const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8;'});
             const link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
-            link.download = `Buchunf_${bookingData.title}_${bookingData.date}.ics`;
+            link.download = `Buchung_${bookingData.title}_${bookingData.date}.ics`;
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
@@ -1225,7 +1225,17 @@
         }
 
         function formatDateToICS(date) {
-            return date.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+            // Annahme: Termine sind in der lokalen Zeitzone
+            const pad = (num) => String(num).padStart(2, '0');
+            return (
+                date.getFullYear() +
+                pad(date.getMonth() + 1) +
+                pad(date.getDate()) + 
+                'T' +
+                pad(date.getHours()) +
+                pad(date.getMinutes()) +
+                pad(date.getSeconds())
+            );
         }
 
         /*Kalendereintrag senden*/
@@ -1241,13 +1251,13 @@ BEGIN:VCALENDAR
 VERSION:2.0
 PRODID:-//Your Booking System//DE
 BEGIN:VEVENT
-UID:${Date.now()}@yourdomain.com
+UID:${bookingData.id}@yourdomain.com
 DTSTAMP:${formattedStart}
-DTSTART:${formattedStart}
-DTEND:${formattedEnd}
+DTSTART;TZID=Europe/Berlin:${formattedStart}
+DTEND;TZID=Europe/Berlin:${formattedEnd}
 SUMMARY:${title}
 DESCRIPTION:Meetingraum Buchung - Raum ${rooms.join(', ')}
-LOCATION:Meetingraum ${rooms.join(', ')}
+LOCATION:Heinrich-Hertz-Straße 6, 44227 Dortmund im 4. Obergeschoss - Meetingraum${rooms.join(',')}
 END:VEVENT
 END:VCALENDAR`.trim();
 
