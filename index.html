@@ -1163,9 +1163,11 @@
                 <div class="booking-detail-item"><strong>${language === 'DE' ? 'Räume' : 'Rooms'}:</strong> ${booking.rooms.map(r => (language === 'DE' ? 'Meetingraum ' : 'Meeting Room ') + r).join(', ')}</div>
                 <div class="booking-detail-item"><strong>Adresse:</strong> Heinrich-Hertz-Straße 6, 44227 Dortmund im 4. Obergeschoss</div>
 
-                downloadICSFile(booking);
             `;
             confirmationModal.style.display = 'flex';
+
+            // Aufruf der Funktion zum Herunterladen der ICS-Datei
+            downloadICSFile(booking);
         }
 
         function downloadICSFile(bookingData) {
@@ -1184,7 +1186,11 @@
 
         /*Senden einer E-Mail*/
         function sendBookingEmail(bookingData) {
-            const icsLink = generateICSContent(bookingData);
+            // Generieren Sie den ICS-Inhalt
+            const icsContent = generateICSContent(bookingData);
+
+            // Base64-Kodierung des ICS-Inhalts (falls erforderlich)
+            const icsBase64 = btoa(unescape(encodeURIComponent(icsContent)));
             
             const templateParams = {
                 title: bookingData.title,
@@ -1198,7 +1204,7 @@
                 address: "Heinrich-Hertz-Straße 6, 44227 Dortmund im 4. Obergeschoss",
                 to_email: bookingData.email, 
                 reply_to: bookingData.email,
-                ics_attachment: icsContent, // Der Link wird in der E-Mail verwendet
+                ics_attachment: icsBase64, // ICS-Inhalt wird als Anhang verwendet
             };
 
             emailjs.send("service_tp6geem", "template_imwd8tm", templateParams)
@@ -1210,21 +1216,17 @@
                 });
         }
 
-        function generateICSContent(bookingData) {
-            // ... (Code zum Generieren des ICS-Inhalts) ...
-        }
-
         function formatDateToICS(date) {
             return date.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
         }
 
         /*Kalendereintrag senden*/
-        function generateICSFile(bookingData) {
+        function generateICSContent(bookingData) {
             const { title, startTime, endTime, date, rooms } = bookingData;
             const startDate = new Date(`${date}T${startTime}`);
             const endDate = new Date(`${date}T${endTime}`);
-            const formattedStart = startDate.toISOString().replace(/-|:|\.\d+/g, "");
-            const formattedEnd = endDate.toISOString().replace(/-|:|\.\d+/g, "");
+            const formattedStart = formatDateToICS(startDate);
+            const formattedEnd = formatDateToICS(endDate);
 
             const icsContent = `
 BEGIN:VCALENDAR
@@ -1242,7 +1244,7 @@ END:VEVENT
 END:VCALENDAR`.trim();
 
             // Base64-Encoding
-            return btoa(unescape(encodeURIComponent(icsContent)));
+            return icsContent;
         }
 
         /* Überprüfung auf Konflikte */
