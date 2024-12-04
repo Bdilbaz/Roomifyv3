@@ -1171,7 +1171,15 @@
         }
 
         function downloadICSFile(bookingData) {
-            // ... (Code zum Herunterladen der ICS-Datei) ...
+            const icsContent = generateICSContent(bookingData);
+            const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8;'});
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `Buchunf_${bookingData.title}_${bookingData.date}.ics`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(link.href);
         }
         
         /* Speichern einer Buchung */
